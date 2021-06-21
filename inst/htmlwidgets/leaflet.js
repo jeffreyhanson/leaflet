@@ -2275,7 +2275,7 @@ methods.setGroupOptions = function (group, options) {
   this.showHideGroupsOnZoom();
 };
 
-methods.addRasterImage = function (uri, bounds, opacity, attribution, layerId, group) {
+methods.addRasterImage = function (uri, bounds, opacity, attribution, layerId, group, pane) {
   // uri is a data URI containing an image. We want to paint this image as a
   // layer at (top-left) bounds[0] to (bottom-right) bounds[1].
   // We can't simply use ImageOverlay, as it uses bilinear scaling which looks
@@ -2395,15 +2395,20 @@ methods.addRasterImage = function (uri, bounds, opacity, attribution, layerId, g
 
   img.src = uri;
 
-  var canvasTiles = _leaflet2["default"].gridLayer({
+  let canvasTilesOptions = {
     opacity: opacity,
     attribution: attribution,
     detectRetina: true,
     async: true
-  }); // NOTE: The done() function MUST NOT be invoked until after the current
+  };
+  if (typeof(pane) == "string") {
+    canvasTilesOptions.pane = pane;
+  }
+  let canvasTiles =  _leaflet2["default"].gridLayer(canvasTilesOptions);
+
+   // NOTE: The done() function MUST NOT be invoked until after the current
   // tick; done() looks in Leaflet's tile cache for the current tile, and
   // since it's still being constructed, it won't be found.
-
 
   canvasTiles.createTile = function (tilePoint, done) {
     var zoom = tilePoint.z;
@@ -2630,11 +2635,22 @@ methods.removeSelect = function () {
   }
 };
 
-methods.createMapPane = function (name, zIndex) {
+methods.createMapPane = function (name, zIndex, visible) {
   this.createPane(name);
   this.getPane(name).style.zIndex = zIndex;
+  if (typeof(visible) === "boolean") {
+    this.getPane(name).style.visibility = visible ? "visible" : "hidden";
+  }
 };
 
+methods.updateMapPane = function (name, zIndex, visible) {
+  if (typeof(zIndex) === "number") {
+    this.getPane(name).style.zIndex = zIndex;
+  }
+  if (typeof(visible) === "boolean") {
+    this.getPane(name).style.visibility = visible ? "visible" : "hidden";
+  }
+};
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./cluster-layer-store":1,"./crs_utils":3,"./dataframe":4,"./global/htmlwidgets":8,"./global/jquery":9,"./global/leaflet":10,"./global/shiny":12,"./mipmapper":16,"./util":17}],16:[function(require,module,exports){

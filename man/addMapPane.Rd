@@ -4,7 +4,7 @@
 \alias{addMapPane}
 \title{Add additional panes to leaflet map to control layer order}
 \usage{
-addMapPane(map, name, zIndex)
+addMapPane(map, name, zIndex, visible = TRUE)
 }
 \arguments{
 \item{map}{A \code{leaflet} or \code{mapview} object.}
@@ -13,6 +13,9 @@ addMapPane(map, name, zIndex)
 
 \item{zIndex}{The zIndex of the pane. Panes with higher index are rendered
 above panes with lower indices.}
+
+\item{visible}{Should the contents of the pane be visible?
+Defaults to \code{TRUE}}
 }
 \description{
 map panes can be created by supplying a name and a zIndex to control layer

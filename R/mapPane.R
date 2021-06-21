@@ -18,6 +18,8 @@
 #' @param name The name of the new pane (refer to this in \code{leafletOptions}.
 #' @param zIndex The zIndex of the pane. Panes with higher index are rendered
 #' above panes with lower indices.
+#' @param visible Should the contents of the pane be visible?
+#' Defaults to \code{TRUE}
 #'
 #' @export
 #' @examples
@@ -69,6 +71,50 @@
 #'     options = pathOptions(pane = "ames_lines")
 #'   )
 #'}
-addMapPane = function(map, name, zIndex) {
-  invokeMethod(map, getMapData(map), 'createMapPane', name, zIndex)
+addMapPane = function(map, name, zIndex, visible = TRUE) {
+  invokeMethod(map, getMapData(map), 'createMapPane', name, zIndex, visible)
+}
+
+#' Update pane on a leaflet map
+#'
+#' @description
+#' update the parameters for a map pane.
+#'
+#' @inheritParams addMapPane
+#'
+#' @export
+#' @examples
+#' \donttest{
+#' rand_lng <- function(n = 10) rnorm(n, -93.65, .01)
+#' rand_lat <- function(n = 10) rnorm(n, 42.0285, .01)
+#'
+#' random_data <- data.frame(
+#'   lng = rand_lng(50),
+#'   lat = rand_lat(50),
+#'   radius = runif(50, 50, 150),
+#'   circleId = paste0("circle #", 1:50),
+#'   lineId = paste0("circle #", 1:50)
+#' )
+#'
+#  # hide circles by updating their map pane
+#' leaflet() %>%
+#'   addTiles() %>%
+#'   # move the center to Snedecor Hall
+#'   setView(-93.65, 42.0285, zoom = 14) %>%
+#'   addMapPane("ames_lines", zIndex = 410) %>% # shown below ames_circles
+#'   addMapPane("ames_circles", zIndex = 420) %>% # shown above ames_lines
+#'   # points above polygons
+#'   addCircles(
+#'     data = random_data, ~lng, ~lat, radius = ~radius, popup = ~circleId,
+#'     options = pathOptions(pane = "ames_circles")
+#'   ) %>%
+#'   # lines in 'ames_lines' pane
+#'   addPolylines(
+#'     data = random_data, ~lng, ~lat, color = "#F00", weight = 20,
+#'     options = pathOptions(pane = "ames_lines")
+#'   ) %>%
+#'   updateMapPane("ames_circles", visible = FALSE)
+#' }
+updateMapPane = function(map, name, zIndex = NULL, visible = NULL) {
+  invokeMethod(map, getMapData(map), 'updateMapPane', name, zIndex, visible)
 }
